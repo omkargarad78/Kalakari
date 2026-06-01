@@ -1,0 +1,20 @@
+from app.models.all_models import (
+    User,
+    Address,
+    Category,
+    Product,
+    ProductImage,
+    ProductVariant,
+    Order,
+    OrderItem,
+    Payment,
+    Review,
+    Wishlist,
+    Coupon,
+    CustomOrder,
+    Notification,
+    ContactMessage,
+    NewsletterSubscriber,
+    AdminLog,
+    AuditLog
+)
