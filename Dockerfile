@@ -13,7 +13,7 @@ RUN npm install
 COPY frontend/ .
 
 # Generate individual product images from the catalogue (build-time)
-RUN apk add --no-cache python3 py3-pip && pip3 install --no-cache-dir pillow
+RUN apk add --no-cache python3 py3-pip py3-pillow
 RUN python3 scripts/crop_catalogue.py
 
 # NEXT_PUBLIC_API_URL must point to the same origin since FastAPI serves both.
