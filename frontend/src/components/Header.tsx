@@ -37,8 +37,8 @@ export default function Header() {
   const navLinks = [
     { label: "Boutique Shop", href: "/shop" },
     { label: "Our Story", href: "/about" },
-    { label: "Bespoke Requests", href: "/custom-order" },
-    { label: "Get In Touch", href: "/contact" }
+    { label: "Bespoke Requests", href: "/custom-order" }
+    // { label: "Get In Touch", href: "/contact" }
   ];
 
   return (
@@ -62,9 +62,14 @@ export default function Header() {
           {/* Logo */}
           <Link
             href="/"
-            className="font-serif text-2xl font-bold tracking-[0.2em] text-brand-charcoal hover:opacity-85 transition-opacity flex items-center gap-1.5"
+            className="hover:opacity-85 transition-opacity flex items-center"
           >
-            L&apos;AURA
+            <img
+              src="/kalakari-logo.png"
+              alt="Kalakari"
+              className="h-10 w-auto object-contain"
+              loading="eager"
+            />
           </Link>
 
           {/* Desktop Navigation */}
@@ -90,14 +95,6 @@ export default function Header() {
 
           {/* Action Icons */}
           <div className="flex items-center gap-4">
-            {/* Search link */}
-            <Link
-              href="/shop"
-              className="p-1.5 text-brand-charcoal/80 hover:text-brand-sage transition-colors"
-              title="Search Catalog"
-            >
-              <Search className="w-4.5 h-4.5" />
-            </Link>
 
             {/* Wishlist */}
             <Link
@@ -164,9 +161,14 @@ export default function Header() {
         {isMobileMenuOpen && (
           <div className="fixed inset-0 bg-brand-white z-50 flex flex-col p-6 animate-fade-in md:hidden">
             <div className="flex justify-between items-center mb-10">
-              <span className="font-serif text-xl font-bold tracking-[0.2em] text-brand-charcoal">
-                L&apos;AURA
-              </span>
+              <Link href="/" onClick={() => setIsMobileMenuOpen(false)} className="hover:opacity-85 transition-opacity">
+                <img
+                  src="/kalakari-logo.png"
+                  alt="Kalakari"
+                  className="h-9 w-auto object-contain"
+                  loading="eager"
+                />
+              </Link>
               <button
                 onClick={() => setIsMobileMenuOpen(false)}
                 className="p-1 hover:bg-brand-cream rounded-full transition-colors"

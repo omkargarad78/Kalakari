@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { Search, SlidersHorizontal, Heart, Eye, ShoppingCart, X, Star } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -11,7 +11,6 @@ import { useWishlist } from "@/context/WishlistContext";
 import Link from "next/link";
 
 export default function ShopPage() {
-  const searchParams = useSearchParams();
   const router = useRouter();
   const { addToCart } = useCart();
   const { toggleWishlist, isWishlisted } = useWishlist();
@@ -19,11 +18,12 @@ export default function ShopPage() {
   const [products, setProducts] = useState<any[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [apiError, setApiError] = useState<string | null>(null);
 
   // States for search and filter inputs
   const [searchInput, setSearchInput] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState(searchParams.get("category") || "");
-  const [sortBy, setSortBy] = useState(searchParams.get("sort_by") || "default");
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const [sortBy, setSortBy] = useState("default");
   
   // Quick View Modal States
   const [quickViewProduct, setQuickViewProduct] = useState<any | null>(null);
@@ -33,13 +33,20 @@ export default function ShopPage() {
   // Load products based on filter states
   const loadData = async () => {
     setLoading(true);
+    setApiError(null);
     try {
-      const q = `/products?search=${searchInput}&category=${selectedCategory}&sort_by=${sortBy}`;
+      const params = new URLSearchParams();
+      if (searchInput.trim()) params.set("search", searchInput.trim());
+      if (selectedCategory) params.set("category", selectedCategory);
+      if (sortBy && sortBy !== "default") params.set("sort_by", sortBy);
+      const q = params.toString() ? `/products/?${params.toString()}` : "/products/";
       const res = await api.get(q);
       setProducts(res.data);
     } catch (error) {
       console.error("Failed to load products:", error);
-      // Fallback
+      setApiError(
+        "Could not load products from the API. Start the backend: cd backend && uvicorn app.main:app --reload --port 8000"
+      );
       setProducts([]);
     } finally {
       setLoading(false);
@@ -59,6 +66,14 @@ export default function ShopPage() {
     fetchCats();
   }, []);
 
+  // Initialize filters from URL query in client runtime
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const params = new URLSearchParams(window.location.search);
+    setSelectedCategory(params.get("category") || "");
+    setSortBy(params.get("sort_by") || "default");
+  }, []);
+
   useEffect(() => {
     loadData();
   }, [selectedCategory, sortBy]);
@@ -68,7 +83,7 @@ export default function ShopPage() {
     loadData();
   };
 
-  const handleCategorySelect = (slug: str) => {
+  const handleCategorySelect = (slug: string) => {
     const nextCat = selectedCategory === slug ? "" : slug;
     setSelectedCategory(nextCat);
     
@@ -82,7 +97,7 @@ export default function ShopPage() {
     router.push(`/shop?${params.toString()}`);
   };
 
-  const handleSortChange = (val: str) => {
+  const handleSortChange = (val: string) => {
     setSortBy(val);
     const params = new URLSearchParams(window.location.search);
     if (val !== "default") {
@@ -92,6 +107,90 @@ export default function ShopPage() {
     }
     router.push(`/shop?${params.toString()}`);
   };
+
+  const groupedByCategory = categories
+    .map((cat) => ({
+      category: cat,
+      items: products.filter((p) => p.category_id === cat.id),
+    }))
+    .filter((g) => g.items.length > 0);
+
+  const shouldShowGroupedView = !selectedCategory && !searchInput.trim();
+
+  const renderProductCards = (items: any[]) => (
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 animate-fade-in">
+      {items.map((prod) => {
+        const image = prod.images?.[0]?.url || "/catalogue-source.png";
+        const isSaved = isWishlisted(prod.id);
+
+        return (
+          <div key={prod.id} className="group relative bg-brand-white rounded-2xl p-4 border border-brand-cream hover-lift">
+            {/* Image Wrapper */}
+            <div className="relative aspect-square rounded-xl overflow-hidden bg-[#f8f5f0] mb-4">
+              <img
+                src={image}
+                alt={prod.name}
+                width={600}
+                height={600}
+                className="absolute inset-0 w-full h-full object-cover object-center group-hover:scale-[1.03] transition-transform duration-500"
+              />
+              
+              {/* Actions */}
+              <button
+                onClick={() => toggleWishlist(prod)}
+                className="absolute top-3 right-3 p-2 bg-brand-white/80 hover:bg-brand-white rounded-full text-brand-charcoal hover:text-brand-error transition-all shadow-sm z-10"
+              >
+                <Heart className={`w-4 h-4 ${isSaved ? "fill-brand-error text-brand-error" : ""}`} />
+              </button>
+            </div>
+
+            {/* Meta */}
+            <div className="space-y-1">
+              <span className="text-[10px] uppercase font-semibold text-brand-gold tracking-wider">
+                {prod.category_name || "Artisan Craft"}
+              </span>
+              <h3 className="font-medium text-sm text-brand-charcoal line-clamp-1">
+                <Link href={`/shop/${prod.slug}`} className="hover:text-brand-sage">
+                  {prod.name}
+                </Link>
+              </h3>
+              
+              <p className="text-[11px] text-brand-charcoal/65 line-clamp-2 min-h-[32px]">
+                {prod.description || "Handmade crochet creation by Kalakari."}
+              </p>
+
+              <div className="flex justify-between items-center pt-2">
+                <span className="font-semibold text-sm text-brand-charcoal">
+                  INR {prod.price}
+                </span>
+                
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => {
+                      setQuickViewProduct(prod);
+                      setSelectedVariant(prod.variants?.[0] || null);
+                      setQvQuantity(1);
+                    }}
+                    className="p-1.5 bg-brand-cream hover:bg-brand-sage/10 text-brand-sage rounded-full transition-colors"
+                    title="Quick View"
+                  >
+                    <Eye className="w-3.5 h-3.5" />
+                  </button>
+                  <button
+                    onClick={() => addToCart(prod, null, 1)}
+                    className="p-1.5 bg-brand-sage hover:bg-brand-sage/90 text-brand-white rounded-full transition-colors"
+                    title="Add to Basket"
+                  >
+                    <ShoppingCart className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
 
   return (
     <div className="flex flex-col min-h-screen bg-brand-white">
@@ -127,7 +226,7 @@ export default function ShopPage() {
             <div className="relative">
               <input
                 type="text"
-                placeholder="Search tote bags..."
+                placeholder="Search crochet designs..."
                 value={searchInput}
                 onChange={(e) => setSearchInput(e.target.value)}
                 className="w-full pl-3 pr-9 py-2 bg-brand-cream/30 border border-brand-gold/30 rounded-xl text-xs focus:outline-none focus:border-brand-sage"
@@ -192,6 +291,11 @@ export default function ShopPage() {
                 <div key={n} className="h-96 bg-brand-cream/40 rounded-2xl animate-pulse" />
               ))}
             </div>
+          ) : apiError ? (
+            <div className="flex flex-col items-center justify-center py-20 text-center space-y-4 px-4">
+              <h3 className="font-serif text-xl text-brand-charcoal">Shop API unavailable</h3>
+              <p className="text-xs text-brand-charcoal/70 max-w-md">{apiError}</p>
+            </div>
           ) : products.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-20 text-center space-y-4">
               <h3 className="font-serif text-xl text-brand-charcoal">No products matching filters</h3>
@@ -199,73 +303,22 @@ export default function ShopPage() {
                 Try searching for other terms or selecting a different category.
               </p>
             </div>
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 animate-fade-in">
-              {products.map((prod) => {
-                const image = prod.images?.[0]?.url || "https://images.unsplash.com/photo-1590874103328-eac38a683ce7?auto=format&fit=crop&q=80&w=600";
-                const isSaved = isWishlisted(prod.id);
-
-                return (
-                  <div key={prod.id} className="group relative bg-brand-white rounded-2xl p-4 border border-brand-cream hover-lift">
-                    {/* Image Wrapper */}
-                    <div className="relative aspect-square rounded-xl overflow-hidden bg-brand-cream mb-4">
-                      <img
-                        src={image}
-                        alt={prod.name}
-                        className="w-full h-full object-cover group-hover:scale-102 transition-transform duration-500"
-                      />
-                      
-                      {/* Actions */}
-                      <button
-                        onClick={() => toggleWishlist(prod)}
-                        className="absolute top-3 right-3 p-2 bg-brand-white/80 hover:bg-brand-white rounded-full text-brand-charcoal hover:text-brand-error transition-all shadow-sm z-10"
-                      >
-                        <Heart className={`w-4 h-4 ${isSaved ? "fill-brand-error text-brand-error" : ""}`} />
-                      </button>
-                    </div>
-
-                    {/* Meta */}
-                    <div className="space-y-1">
-                      <span className="text-[10px] uppercase font-semibold text-brand-gold tracking-wider">
-                        {prod.category_name || "Artisan Craft"}
-                      </span>
-                      <h3 className="font-medium text-sm text-brand-charcoal line-clamp-1">
-                        <Link href={`/shop/${prod.slug}`} className="hover:text-brand-sage">
-                          {prod.name}
-                        </Link>
-                      </h3>
-                      
-                      <div className="flex justify-between items-center pt-2">
-                        <span className="font-semibold text-sm text-brand-charcoal">
-                          INR {prod.price}
-                        </span>
-                        
-                        <div className="flex gap-2">
-                          <button
-                            onClick={() => {
-                              setQuickViewProduct(prod);
-                              setSelectedVariant(prod.variants?.[0] || null);
-                              setQvQuantity(1);
-                            }}
-                            className="p-1.5 bg-brand-cream hover:bg-brand-sage/10 text-brand-sage rounded-full transition-colors"
-                            title="Quick View"
-                          >
-                            <Eye className="w-3.5 h-3.5" />
-                          </button>
-                          <button
-                            onClick={() => addToCart(prod, null, 1)}
-                            className="p-1.5 bg-brand-sage hover:bg-brand-sage/90 text-brand-white rounded-full transition-colors"
-                            title="Add to Basket"
-                          >
-                            <ShoppingCart className="w-3.5 h-3.5" />
-                          </button>
-                        </div>
-                      </div>
-                    </div>
+          ) : shouldShowGroupedView ? (
+            <div className="space-y-12">
+              {groupedByCategory.map((group) => (
+                <section key={group.category.id} className="space-y-4">
+                  <div className="flex items-center justify-between border-b border-brand-cream pb-2">
+                    <h3 className="font-serif text-xl text-brand-charcoal font-bold">{group.category.name}</h3>
+                    <span className="text-[10px] uppercase tracking-wider text-brand-charcoal/50 font-semibold">
+                      {group.items.length} designs
+                    </span>
                   </div>
-                );
-              })}
+                  {renderProductCards(group.items)}
+                </section>
+              ))}
             </div>
+          ) : (
+            renderProductCards(products)
           )}
         </div>
       </main>
@@ -284,11 +337,11 @@ export default function ShopPage() {
             </button>
 
             {/* Product Image */}
-            <div className="w-full md:w-1/2 aspect-square bg-brand-cream rounded-xl overflow-hidden">
+            <div className="relative w-full md:w-1/2 aspect-square bg-[#f8f5f0] rounded-xl overflow-hidden">
               <img
-                src={quickViewProduct.images?.[0]?.url || "https://images.unsplash.com/photo-1590874103328-eac38a683ce7?auto=format&fit=crop&q=80&w=600"}
+                src={quickViewProduct.images?.[0]?.url || "/catalogue-source.png"}
                 alt={quickViewProduct.name}
-                className="w-full h-full object-cover"
+                className="absolute inset-0 w-full h-full object-cover object-center"
               />
             </div>
 

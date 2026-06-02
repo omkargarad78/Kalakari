@@ -13,20 +13,20 @@ export interface CartItem {
 interface CartContextType {
   cartItems: CartItem[];
   addToCart: (product: any, variant: any | null, quantity?: number) => void;
-  updateQuantity: (itemId: str, quantity: number) => void;
-  removeFromCart: (itemId: str) => void;
+  updateQuantity: (itemId: string, quantity: number) => void;
+  removeFromCart: (itemId: string) => void;
   clearCart: () => void;
   coupon: any | null;
   couponCodeInput: string;
-  setCouponCodeInput: (code: str) => void;
-  applyCoupon: (code: str) => Promise<string>;
+  setCouponCodeInput: (code: string) => void;
+  applyCoupon: (code: string) => Promise<string>;
   removeCoupon: () => void;
   giftNote: string;
-  setGiftNote: (note: str) => void;
+  setGiftNote: (note: string) => void;
   saveForLater: CartItem[];
-  moveToSaveForLater: (itemId: str) => void;
-  moveToCart: (itemId: str) => void;
-  removeFromSaveForLater: (itemId: str) => void;
+  moveToSaveForLater: (itemId: string) => void;
+  moveToCart: (itemId: string) => void;
+  removeFromSaveForLater: (itemId: string) => void;
   cartSubtotal: number;
   discountAmount: number;
   shippingFee: number;
@@ -83,7 +83,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     saveCart(updated);
   };
 
-  const updateQuantity = (itemId: str, quantity: number) => {
+  const updateQuantity = (itemId: string, quantity: number) => {
     if (quantity <= 0) {
       removeFromCart(itemId);
       return;
@@ -94,7 +94,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     saveCart(updated);
   };
 
-  const removeFromCart = (itemId: str) => {
+  const removeFromCart = (itemId: string) => {
     const updated = cartItems.filter((item) => item.id !== itemId);
     saveCart(updated);
   };
@@ -106,7 +106,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     localStorage.removeItem("gift_note");
   };
 
-  const applyCoupon = async (code: str): Promise<string> => {
+  const applyCoupon = async (code: string): Promise<string> => {
     try {
       const response = await api.get(`/orders/coupons/validate/${code.trim().toUpperCase()}`);
       const couponData = response.data;
@@ -125,13 +125,13 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     localStorage.removeItem("applied_coupon");
   };
 
-  const updateGiftNote = (note: str) => {
+  const updateGiftNote = (note: string) => {
     setGiftNote(note);
     localStorage.setItem("gift_note", note);
   };
 
   // Save for later workflows
-  const moveToSaveForLater = (itemId: str) => {
+  const moveToSaveForLater = (itemId: string) => {
     const itemToMove = cartItems.find((i) => i.id === itemId);
     if (!itemToMove) return;
     
@@ -146,7 +146,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     removeFromCart(itemId);
   };
 
-  const moveToCart = (itemId: str) => {
+  const moveToCart = (itemId: string) => {
     const itemToMove = saveForLater.find((i) => i.id === itemId);
     if (!itemToMove) return;
 
@@ -154,7 +154,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     removeFromSaveForLater(itemId);
   };
 
-  const removeFromSaveForLater = (itemId: str) => {
+  const removeFromSaveForLater = (itemId: string) => {
     const updated = saveForLater.filter((i) => i.id !== itemId);
     saveLaterList(updated);
   };

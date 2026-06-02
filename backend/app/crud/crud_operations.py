@@ -55,6 +55,24 @@ def create_category(db: Session, name: str, slug: str, description: str = None, 
     db.refresh(db_cat)
     return db_cat
 
+def get_category_by_id(db: Session, category_id: str):
+    return db.execute(select(Category).where(Category.id == category_id)).scalars().first()
+
+def update_category(db: Session, category: Category, data) -> Category:
+    for field, value in data.dict(exclude_unset=True).items():
+        setattr(category, field, value)
+    db.commit()
+    db.refresh(category)
+    return category
+
+def delete_category(db: Session, category_id: str) -> bool:
+    cat = get_category_by_id(db, category_id)
+    if cat:
+        db.delete(cat)
+        db.commit()
+        return True
+    return False
+
 # ----------------- PRODUCT CRUD -----------------
 def get_products(
     db: Session,
@@ -64,9 +82,15 @@ def get_products(
     is_featured: bool = None,
     is_visible: bool = True,
     skip: int = 0,
-    limit: int = 50
+    limit: int = 100
 ):
-    query = select(Product)
+    from sqlalchemy.orm import joinedload
+
+    query = select(Product).options(
+        joinedload(Product.images),
+        joinedload(Product.variants),
+        joinedload(Product.category),
+    )
     
     if is_visible is not None:
         query = query.where(Product.is_visible == is_visible)
@@ -75,8 +99,9 @@ def get_products(
     if category_slug:
         cat_query = select(Category.id).where(Category.slug == category_slug)
         cat_id = db.execute(cat_query).scalar_one_or_none()
-        if cat_id:
-            query = query.where(Product.category_id == cat_id)
+        if not cat_id:
+            return []
+        query = query.where(Product.category_id == cat_id)
             
     if search:
         search_filter = f"%{search}%"
@@ -97,10 +122,21 @@ def get_products(
         query = query.order_by(desc(Product.is_featured), desc(Product.created_at))
         
     query = query.offset(skip).limit(limit)
-    return db.execute(query).scalars().all()
+    return db.execute(query).unique().scalars().all()
 
 def get_product_by_slug(db: Session, slug: str):
-    return db.execute(select(Product).where(Product.slug == slug)).scalars().first()
+    from sqlalchemy.orm import joinedload
+
+    stmt = (
+        select(Product)
+        .where(Product.slug == slug)
+        .options(
+            joinedload(Product.images),
+            joinedload(Product.variants),
+            joinedload(Product.category),
+        )
+    )
+    return db.execute(stmt).unique().scalars().first()
 
 def get_product_by_id(db: Session, product_id: str):
     return db.execute(select(Product).where(Product.id == product_id)).scalars().first()
@@ -202,18 +238,29 @@ def create_order_with_upi(db: Session, user_id: str, order_in, shipping_fee: Dec
     
     for item in order_in.items:
         product = get_product_by_id(db, item.product_id)
-        if not product or product.stock < item.quantity:
-            raise ValueError(f"Insufficient stock for product {product.name if product else item.product_id}")
-            
-        # Variant check
+        if not product:
+            raise ValueError(f"Product not found: {item.product_id}")
+
+        variant = None
         price = product.price
+
+        # Variant-first validation: if a variant is selected, validate variant stock
         if item.product_variant_id:
-            variant = db.execute(select(ProductVariant).where(ProductVariant.id == item.product_variant_id)).scalars().first()
-            if variant:
-                if variant.stock < item.quantity:
-                    raise ValueError(f"Insufficient stock for variant {variant.name}")
-                if variant.price_override is not None:
-                    price = variant.price_override
+            variant = (
+                db.execute(select(ProductVariant).where(ProductVariant.id == item.product_variant_id))
+                .scalars()
+                .first()
+            )
+            if not variant:
+                raise ValueError("Selected product variant not found.")
+            if variant.stock < item.quantity:
+                raise ValueError(f"Insufficient stock for variant {variant.name}")
+            if variant.price_override is not None:
+                price = variant.price_override
+        else:
+            # No variant: validate product stock
+            if product.stock < item.quantity:
+                raise ValueError(f"Insufficient stock for product {product.name}")
                     
         item_total = price * item.quantity
         subtotal += item_total
@@ -225,7 +272,7 @@ def create_order_with_upi(db: Session, user_id: str, order_in, shipping_fee: Dec
             "quantity": item.quantity,
             "price": price,
             "product_ref": product,
-            "variant_ref": variant if item.product_variant_id else None
+            "variant_ref": variant
         })
         
     # Apply discount
@@ -269,9 +316,10 @@ def create_order_with_upi(db: Session, user_id: str, order_in, shipping_fee: Dec
         db.add(db_item)
         
         # Deduct inventory
-        item["product_ref"].stock -= item["quantity"]
         if item["variant_ref"]:
             item["variant_ref"].stock -= item["quantity"]
+        else:
+            item["product_ref"].stock -= item["quantity"]
             
     # 5. Create Payment record
     db_payment = Payment(

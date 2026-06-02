@@ -83,7 +83,7 @@ export default function DashboardPage() {
     }
   };
 
-  const handleDeleteAddress = async (id: str) => {
+  const handleDeleteAddress = async (id: string) => {
     if (!confirm("Are you sure you want to delete this address?")) return;
     try {
       await api.delete(`/addresses/${id}`);
@@ -93,7 +93,7 @@ export default function DashboardPage() {
     }
   };
 
-  const handleAcceptQuote = async (customOrderId: str) => {
+  const handleAcceptQuote = async (customOrderId: string) => {
     try {
       await api.put(`/custom-orders/${customOrderId}/respond?accept=true`);
       alert("Quotation accepted! You can now proceed to checkout.");

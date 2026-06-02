@@ -1,0 +1,29 @@
+services:
+  - type: web
+    name: kalakari
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    envVars:
+      - key: DATABASE_URL
+        sync: false          # Set in Render dashboard
+      - key: JWT_SECRET
+        sync: false          # Set in Render dashboard
+      - key: ENVIRONMENT
+        value: production
+      - key: BACKEND_CORS_ORIGINS
+        value: ""            # Leave empty — same-origin, CORS not needed
+      - key: CLOUDINARY_CLOUD_NAME
+        sync: false
+      - key: CLOUDINARY_API_KEY
+        sync: false
+      - key: CLOUDINARY_API_SECRET
+        sync: false
+      - key: RESEND_API_KEY
+        sync: false
+      - key: SENDER_EMAIL
+        value: noreply@kalakari.in
+      - key: UPI_ID
+        sync: false
+      - key: MERCH_NAME
+        value: Kalakari

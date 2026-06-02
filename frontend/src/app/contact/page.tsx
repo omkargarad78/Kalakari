@@ -76,7 +76,7 @@ export default function ContactPage() {
               <div className="space-y-4">
                 <div className="flex gap-3 items-center">
                   <Mail className="w-4 h-4 text-brand-sage" />
-                  <span>studio@lauracrochet.com</span>
+                  <span>studio@kalakari.in</span>
                 </div>
                 <div className="flex gap-3 items-center">
                   <Phone className="w-4 h-4 text-brand-sage" />
@@ -97,7 +97,7 @@ export default function ContactPage() {
               <div className="absolute inset-y-0 w-px bg-brand-gold/25 left-1/2" />
               <div className="relative bg-brand-white p-4 rounded-xl border border-brand-gold/30 shadow-md max-w-xs space-y-1.5 z-10 hover-lift">
                 <MapPin className="w-6 h-6 text-brand-sage mx-auto fill-brand-sage/20" />
-                <h4 className="font-serif text-xs font-bold text-brand-charcoal">L&apos;Aura Atelier</h4>
+                <h4 className="font-serif text-xs font-bold text-brand-charcoal">Kalakari Studio</h4>
                 <p className="text-[9px] text-brand-charcoal/50">Visiting by appointment only. Jaipur, Rajasthan.</p>
               </div>
             </div>

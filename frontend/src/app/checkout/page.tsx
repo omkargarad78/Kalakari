@@ -176,15 +176,11 @@ export default function CheckoutPage() {
 
   // Copy UPI ID helper
   const handleCopyUPI = () => {
-    navigator.clipboard.writeText("familycrochet@upibank");
+    navigator.clipboard.writeText("omgdsc78@oksbi");
     alert("UPI ID copied to clipboard!");
   };
 
-  // Generate UPI URI for QR Code (India Standard)
-  const upiId = "familycrochet@upibank";
-  const payeeName = "LAura Crochet Atelier";
-  const upiLink = `upi://pay?pa=${upiId}&pn=${encodeURIComponent(payeeName)}&am=${calculatedTotal}&cu=INR&tn=OrderPayment`;
-  const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(upiLink)}`;
+  const upiId = "omgdsc78@oksbi";
 
   return (
     <div className="flex flex-col min-h-screen bg-brand-white">
@@ -370,7 +366,7 @@ export default function CheckoutPage() {
               <div className="flex flex-col md:flex-row gap-6 items-center justify-center bg-brand-white p-6 rounded-2xl border border-brand-cream">
                 {/* QR Code */}
                 <div className="bg-brand-cream/30 p-4 rounded-xl border border-brand-gold/25 flex flex-col items-center">
-                  <img src={qrCodeUrl} alt="UPI Payment QR Code" className="w-40 h-40 object-contain rounded bg-white p-2" />
+                  <img src="/upi-qr.png" alt="UPI Payment QR Code" className="w-40 h-40 object-contain rounded bg-white p-2" />
                   <span className="text-[9px] uppercase tracking-wider font-bold text-brand-charcoal/50 mt-2">Scan with any UPI App</span>
                 </div>
 

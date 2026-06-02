@@ -53,7 +53,7 @@ export default function AdminProductsPage() {
   }, []);
 
   // Sync Slug automatically based on name
-  const handleNameChange = (val: str) => {
+  const handleNameChange = (val: string) => {
     setName(val);
     if (!editId) {
       setSlug(val.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, ""));
@@ -118,7 +118,7 @@ export default function AdminProductsPage() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  const handleDelete = async (id: str) => {
+  const handleDelete = async (id: string) => {
     if (!confirm("Are you sure you want to delete this product? All files mapping to it will be lost.")) return;
     try {
       await api.delete(`/products/${id}`);

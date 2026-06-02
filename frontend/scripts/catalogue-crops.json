@@ -1,0 +1,209 @@
+{
+  "source": "public/catalogue-source.png",
+  "layout": {
+    "panels": 6,
+    "cols_per_panel": 3,
+    "rows_per_panel": 3,
+    "header_h": 78,
+    "footer_h": 36,
+    "pad_x": 5,
+    "pad_y": 4
+  },
+  "products": [
+    {
+      "slug": "small-hair-elastics-set-3",
+      "name": "Small Hair Elastics (Set of 3)",
+      "description": "Soft handmade crochet hair elastics, perfect for daily wear.",
+      "price_inr": 150,
+      "category_slug": "hair-accessories",
+      "panel": 0,
+      "col": 0,
+      "row": 0
+    },
+    {
+      "slug": "frilled-scrunchie-maroon",
+      "name": "Frilled Crochet Scrunchie (Maroon)",
+      "description": "Elegant maroon frilled scrunchie with delicate crochet texture.",
+      "price_inr": 180,
+      "category_slug": "hair-accessories",
+      "panel": 0,
+      "col": 1,
+      "row": 0
+    },
+    {
+      "slug": "frilled-scrunchie-orange",
+      "name": "Frilled Crochet Scrunchie (Orange)",
+      "description": "Bright orange frilled scrunchie with white crochet edging.",
+      "price_inr": 180,
+      "category_slug": "hair-accessories",
+      "panel": 0,
+      "col": 2,
+      "row": 0
+    },
+
+    {
+      "slug": "rose-hair-bun-red",
+      "name": "Rose Hair Bun (Red)",
+      "description": "Statement red crochet rose bun cover for festive hairstyles.",
+      "price_inr": 250,
+      "category_slug": "hair-bun-style-accessories",
+      "panel": 1,
+      "col": 0,
+      "row": 0
+    },
+    {
+      "slug": "rose-hair-bun-pink-white",
+      "name": "Rose Hair Bun (Pink & White)",
+      "description": "Pink and white crochet rose bun accessory with layered petals.",
+      "price_inr": 250,
+      "category_slug": "hair-bun-style-accessories",
+      "panel": 1,
+      "col": 1,
+      "row": 0
+    },
+    {
+      "slug": "crochet-gajra-white",
+      "name": "Crochet Gajra (White)",
+      "description": "Classic white crochet gajra with green accents for buns and braids.",
+      "price_inr": 180,
+      "category_slug": "hair-bun-style-accessories",
+      "panel": 1,
+      "col": 2,
+      "row": 0
+    },
+
+    {
+      "slug": "rose-applique-white",
+      "name": "Rose Appliqué (White)",
+      "description": "Handcrafted white rose appliqué for bags, scarves, and decor.",
+      "price_inr": 150,
+      "category_slug": "flower-appliques-brooches",
+      "panel": 2,
+      "col": 0,
+      "row": 0
+    },
+    {
+      "slug": "sunflower-pin-decor",
+      "name": "Sunflower Pin Decor",
+      "description": "Cheerful sunflower crochet pin with pot-style finish.",
+      "price_inr": 180,
+      "category_slug": "flower-appliques-brooches",
+      "panel": 2,
+      "col": 1,
+      "row": 0
+    },
+    {
+      "slug": "rose-brooch-red",
+      "name": "Rose Brooch (Red)",
+      "description": "Vibrant red crochet rose brooch for traditional and modern outfits.",
+      "price_inr": 180,
+      "category_slug": "flower-appliques-brooches",
+      "panel": 2,
+      "col": 2,
+      "row": 0
+    },
+
+    {
+      "slug": "ruffled-doily-white-maroon",
+      "name": "Ruffled Doily/Coaster (White & Maroon)",
+      "description": "Ruffled white crochet doily with maroon scalloped border.",
+      "price_inr": 350,
+      "category_slug": "home-decor",
+      "panel": 3,
+      "col": 0,
+      "row": 0
+    },
+    {
+      "slug": "round-crochet-mat-brown-border",
+      "name": "Round Crochet Mat (Brown Border)",
+      "description": "Round crochet mat with rich brown scalloped edging.",
+      "price_inr": 450,
+      "category_slug": "home-decor",
+      "panel": 3,
+      "col": 1,
+      "row": 0
+    },
+    {
+      "slug": "ruffled-doily-white-orange",
+      "name": "Ruffled Doily/Coaster (White & Orange)",
+      "description": "Ruffled crochet doily with white base and orange scalloped border.",
+      "price_inr": 350,
+      "category_slug": "home-decor",
+      "panel": 3,
+      "col": 2,
+      "row": 0
+    },
+
+    {
+      "slug": "crochet-bead-garland-brown",
+      "name": "Crochet Bead Garland (Brown)",
+      "description": "Decorative brown crochet bead garland for doors and walls.",
+      "price_inr": 250,
+      "category_slug": "garlands-hangings",
+      "panel": 4,
+      "col": 0,
+      "row": 0
+    },
+    {
+      "slug": "crochet-toran-maroon-gold",
+      "name": "Crochet Toran (Maroon & Gold)",
+      "description": "Festive maroon and gold crochet toran for doorways and pooja decor.",
+      "price_inr": 280,
+      "category_slug": "garlands-hangings",
+      "panel": 4,
+      "col": 1,
+      "row": 0
+    },
+    {
+      "slug": "crochet-flower-garland",
+      "name": "Crochet Flower Garland",
+      "description": "Colorful crochet flower garland for festive home styling.",
+      "price_inr": 350,
+      "category_slug": "garlands-hangings",
+      "panel": 4,
+      "col": 2,
+      "row": 0
+    },
+
+    {
+      "slug": "mini-flower-coasters-set-4",
+      "name": "Mini Flower Coasters (Set of 4)",
+      "description": "Set of four mini flower crochet coasters for tea-time serving.",
+      "price_inr": 200,
+      "category_slug": "coasters-trinkets",
+      "panel": 5,
+      "col": 0,
+      "row": 0
+    },
+    {
+      "slug": "mini-flower-coasters-mixed",
+      "name": "Mini Flower Coasters (Mixed)",
+      "description": "Mixed-color mini flower coasters handcrafted with cotton yarn.",
+      "price_inr": 200,
+      "category_slug": "coasters-trinkets",
+      "panel": 5,
+      "col": 1,
+      "row": 0
+    },
+    {
+      "slug": "mini-flower-coasters-set-3",
+      "name": "Mini Flower Coasters (Set of 3)",
+      "description": "Set of three mini flower coasters with bright crochet petals.",
+      "price_inr": 150,
+      "category_slug": "coasters-trinkets",
+      "panel": 5,
+      "col": 2,
+      "row": 0
+    },
+    {
+      "slug": "mini-rose-coasters-set-2",
+      "name": "Mini Rose Coasters (Set of 2)",
+      "description": "Pair of mini maroon crochet rose coasters for tea-time serving.",
+      "price_inr": 120,
+      "category_slug": "coasters-trinkets",
+      "panel": 5,
+      "col": 2,
+      "row": 0
+    }
+  ]
+}

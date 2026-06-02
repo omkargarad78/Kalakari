@@ -7,8 +7,8 @@ import api from "@/lib/api";
 interface AuthContextType {
   user: any;
   loading: boolean;
-  login: (email: str, password: str) => Promise<void>;
-  register: (email: str, password: str, full_name: str) => Promise<void>;
+  login: (email: string, password: string) => Promise<void>;
+  register: (email: string, password: string, full_name: string) => Promise<void>;
   logout: () => void;
   isAdmin: boolean;
   refreshUser: () => Promise<void>;
@@ -43,7 +43,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     refreshUser();
   }, []);
 
-  const login = async (email: str, password: str) => {
+  const login = async (email: string, password: string) => {
     setLoading(true);
     try {
       const params = new URLSearchParams();
@@ -66,13 +66,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       } else {
         router.push("/dashboard");
       }
+      setLoading(false);
     } catch (error: any) {
       setLoading(false);
       throw new Error(error.response?.data?.detail || "Failed to login");
     }
   };
 
-  const register = async (email: str, password: str, full_name: str) => {
+  const register = async (email: string, password: string, full_name: string) => {
     setLoading(true);
     try {
       await api.post("/auth/register", { email, password, full_name });

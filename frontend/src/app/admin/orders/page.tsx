@@ -39,7 +39,7 @@ export default function AdminOrdersPage() {
   };
 
   // UPI payment approval
-  const handleVerifyPayment = async (orderId: str, approve: bool) => {
+  const handleVerifyPayment = async (orderId: string, approve: boolean) => {
     const action = approve ? "APPROVE" : "REJECT";
     if (!confirm(`Are you sure you want to ${action} payment for Order #${orderId.slice(0,8)}?`)) return;
     try {
@@ -57,7 +57,7 @@ export default function AdminOrdersPage() {
   };
 
   // Dropdown status updates
-  const handleStatusChange = async (orderId: str, newStatus: str) => {
+  const handleStatusChange = async (orderId: string, newStatus: string) => {
     try {
       await api.put(`/orders/${orderId}/status`, { status: newStatus });
       alert(`Order status updated to ${newStatus}.`);
@@ -76,6 +76,7 @@ export default function AdminOrdersPage() {
     "Confirmed",
     "Processing",
     "Packed",
+    "Dispatched",
     "Shipped",
     "Delivered",
     "Cancelled",

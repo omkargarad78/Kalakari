@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { Sparkles, Mail, Lock, User, Eye, EyeOff } from "lucide-react";
 import Header from "@/components/Header";
@@ -9,8 +9,7 @@ import Footer from "@/components/Footer";
 
 export default function LoginPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const redirect = searchParams.get("redirect") || "";
+  const [redirect, setRedirect] = useState("");
 
   const { login, register, user } = useAuth();
   
@@ -23,6 +22,12 @@ export default function LoginPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState("");
+
+  React.useEffect(() => {
+    if (typeof window === "undefined") return;
+    const params = new URLSearchParams(window.location.search);
+    setRedirect(params.get("redirect") || "");
+  }, []);
 
   // Redirect if already logged in
   React.useEffect(() => {
@@ -69,7 +74,7 @@ export default function LoginPage() {
           <div className="text-center space-y-2">
             <span className="inline-flex items-center gap-1 text-[10px] uppercase font-bold text-brand-sage tracking-wider">
               <Sparkles className="w-3.5 h-3.5 text-brand-gold fill-brand-gold" />
-              L&apos;Aura Crochet Atelier
+              Kalakari
             </span>
             <h2 className="font-serif text-2xl font-bold text-brand-charcoal">
               {isLogin ? "Welcome Back" : "Create Account"}

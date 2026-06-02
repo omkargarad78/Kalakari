@@ -1,5 +1,8 @@
 import sys
 import os
+import json
+from pathlib import Path
+
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 
 from decimal import Decimal
@@ -41,131 +44,114 @@ def seed_db():
             db.add(customer)
             print("Seeded customer user (customer@crochet.com / customer123)")
             
-        # 2. Seed Categories (if empty)
-        if db.query(Category).count() == 0:
-            categories_data = [
-                {"name": "Luxury Bags", "slug": "luxury-bags", "description": "Exquisite handmade shoulder bags and totes.", "image_url": "https://images.unsplash.com/photo-1590874103328-eac38a683ce7?auto=format&fit=crop&q=80&w=600"},
-                {"name": "Apparel & Cardigans", "slug": "apparel-cardigans", "description": "Comfortable, premium knitted apparel.", "image_url": "https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?auto=format&fit=crop&q=80&w=600"},
-                {"name": "Floral Bouquets", "slug": "floral-bouquets", "description": "Everlasting crochet flowers for home decor.", "image_url": "https://images.unsplash.com/photo-1526047932273-341f2a7631f9?auto=format&fit=crop&q=80&w=600"},
-                {"name": "Cute Amigurumi", "slug": "cute-amigurumi", "description": "Handcrafted plushies and stuffed animals.", "image_url": "https://images.unsplash.com/photo-1559251606-c623743a6d76?auto=format&fit=crop&q=80&w=600"}
-            ]
-            categories = []
-            for item in categories_data:
+        # 2. Seed Categories (upsert by slug)
+        categories_data = [
+            {"name": "Hair Accessories", "slug": "hair-accessories", "description": "Clips, scrunchies, and small crochet hair essentials.", "image_url": "/catalogue-source.png"},
+            {"name": "Hair Bun & Style Accessories", "slug": "hair-bun-style-accessories", "description": "Bun covers, gajra and hair styling pieces.", "image_url": "/catalogue-source.png"},
+            {"name": "Flower Appliqués & Brooches", "slug": "flower-appliques-brooches", "description": "Appliqués, brooches, and floral add-ons.", "image_url": "/catalogue-source.png"},
+            {"name": "Home Decor", "slug": "home-decor", "description": "Mats, coasters, decor rounds, and home pieces.", "image_url": "/catalogue-source.png"},
+            {"name": "Garlands & Hangings", "slug": "garlands-hangings", "description": "Torans, garlands, and decorative hangings.", "image_url": "/catalogue-source.png"},
+            {"name": "Coasters & Trinkets", "slug": "coasters-trinkets", "description": "Mini flower coasters and small trinket sets.", "image_url": "/catalogue-source.png"},
+        ]
+
+        categories = []
+        for item in categories_data:
+            existing = db.query(Category).filter_by(slug=item["slug"]).first()
+            if existing:
+                existing.name = item["name"]
+                existing.description = item["description"]
+                existing.image_url = item["image_url"]
+                categories.append(existing)
+            else:
                 cat = Category(
                     name=item["name"],
                     slug=item["slug"],
                     description=item["description"],
-                    image_url=item["image_url"]
+                    image_url=item["image_url"],
                 )
                 db.add(cat)
                 categories.append(cat)
-            db.commit()
-            print("Seeded 4 categories.")
-        else:
-            categories = db.query(Category).all()
+        db.commit()
+        print("Seeded/updated Kalakari categories.")
             
-        # 3. Seed Products & Images & Variants (if empty)
-        if db.query(Product).count() == 0:
-            cat_bags = next(c for c in categories if c.slug == "luxury-bags")
-            cat_apparel = next(c for c in categories if c.slug == "apparel-cardigans")
-            cat_floral = next(c for c in categories if c.slug == "floral-bouquets")
-            cat_amigurumi = next(c for c in categories if c.slug == "cute-amigurumi")
-            
-            products_data = [
-                {
-                    "name": "Sage Green Crochet Tote Bag",
-                    "slug": "sage-green-crochet-tote",
-                    "description": "A luxury everyday tote bag knitted with double-strand sage cotton. Features double reinforced shoulder straps, a heavy texture detail, and structured bottom. Perfect companion for weekend trips and artisan coffee shop visits.",
-                    "price": Decimal("2499.00"),
-                    "stock": 8,
-                    "category_id": cat_bags.id,
-                    "is_featured": True,
-                    "materials": "100% Organic Sage Cotton Yarn",
-                    "handmade_details": "Meticulously double-stitched over 14 hours by our family makers. Seamless base and flexible yet non-stretch shoulder strap support.",
-                    "shipping_info": "Ships in 2-3 business days. Packed in a sustainable linen dustbag.",
-                    "images": ["https://images.unsplash.com/photo-1590874103328-eac38a683ce7?auto=format&fit=crop&q=80&w=800"],
-                    "variants": ["Sage Green (Standard)", "Creamy White Extra Big"]
-                },
-                {
-                    "name": "Oversized Sunset Mohair Cardigan",
-                    "slug": "oversized-sunset-mohair-cardigan",
-                    "description": "Wrap yourself in warmth and absolute elegance. This chunky hand-knit cardigan blends premium mohair fibers and delicate silk to create an ethereal halo-like finish. Colored in transitions resembling a warm summer sunset.",
-                    "price": Decimal("5999.00"),
-                    "stock": 3,
-                    "category_id": cat_apparel.id,
-                    "is_featured": True,
-                    "materials": "70% Kid Mohair, 30% Mulberry Silk",
-                    "handmade_details": "Handcrafted over 28 hours using custom large wooden needles to maintain a light, cloud-like airy puff design.",
-                    "shipping_info": "Due to high demand, please allow 5-7 days for shipping configuration.",
-                    "images": ["https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?auto=format&fit=crop&q=80&w=800"],
-                    "variants": ["Pastel Sunset", "Golden Harvest"]
-                },
-                {
-                    "name": "Everlasting Cream Rose Bouquet",
-                    "slug": "everlasting-cream-rose-bouquet",
-                    "description": "A set of five exquisitely detailed crochet roses in warm cream and blush tones. Includes flexible internal stem wiring to arrange in your favorite high-end ceramic vase. A perfect everlasting gift that never fades.",
-                    "price": Decimal("1299.00"),
-                    "stock": 15,
-                    "category_id": cat_floral.id,
-                    "is_featured": False,
-                    "materials": "Soft Acrylic & Milk Cotton Blend, Galvanized Stem Wires",
-                    "handmade_details": "Each rose takes 2 hours of delicate petal-by-petal loop work. Hand-wrapped stems with organic green leaves.",
-                    "shipping_info": "Ships next business day in a premium gift box.",
-                    "images": ["https://images.unsplash.com/photo-1526047932273-341f2a7631f9?auto=format&fit=crop&q=80&w=800"],
-                    "variants": ["Blush Cream 5-pack", "Crimson Red 5-pack"]
-                },
-                {
-                    "name": "Forest Mushroom Desk Amigurumi",
-                    "slug": "forest-mushroom-desk-amigurumi",
-                    "description": "An adorable woodland mushroom companion to brighten your desk space. Features a speckled red cap, cozy safety-lock eyes, and a sweet hand-stitched smile. Stuffed with hypoallergenic premium recycled fluff.",
-                    "price": Decimal("899.00"),
-                    "stock": 10,
-                    "category_id": cat_amigurumi.id,
-                    "is_featured": False,
-                    "materials": "Milk Cotton Yarn, Safety Eyes, Recycled Poly-fil",
-                    "handmade_details": "Tight single-crochet stitching guarantees durability and shape. Weighted bottom so it stands perfectly upright.",
-                    "shipping_info": "Ships in 1-2 business days in a beautiful craft paper bag.",
-                    "images": ["https://images.unsplash.com/photo-1559251606-c623743a6d76?auto=format&fit=crop&q=80&w=800"],
-                    "variants": ["Red Speckled Cap", "Brown Oak Cap"]
-                }
-            ]
-            
-            for item in products_data:
+        # 3. Seed Products from the Kalakari catalogue (upsert by slug)
+        catalogue_json = (
+            Path(__file__).resolve().parents[3]
+            / "frontend"
+            / "scripts"
+            / "catalogue-crops.json"
+        )
+        catalogue_cfg = json.loads(catalogue_json.read_text(encoding="utf-8"))
+        catalogue_products = [
+            (
+                p["category_slug"],
+                p["name"],
+                p["slug"],
+                p["price_inr"],
+                p.get("description", "Handmade crochet creation by Kalakari."),
+            )
+            for p in catalogue_cfg["products"]
+        ]
+
+        allowed_category_slugs = {
+            "hair-accessories",
+            "hair-bun-style-accessories",
+            "flower-appliques-brooches",
+            "home-decor",
+            "garlands-hangings",
+            "coasters-trinkets",
+        }
+        allowed_product_slugs = {slug for _, _, slug, _, _ in catalogue_products}
+
+        # Enforce curated catalogue only (remove old generic categories/products).
+        for prod in db.query(Product).all():
+            if prod.slug not in allowed_product_slugs:
+                db.delete(prod)
+        db.commit()
+
+        for cat in db.query(Category).all():
+            if cat.slug not in allowed_category_slugs:
+                db.delete(cat)
+        db.commit()
+
+        # Map categories
+        cats_by_slug = {c.slug: c for c in categories}
+
+        for cat_slug, name, slug, price, description in catalogue_products:
+            category = cats_by_slug.get(cat_slug)
+            existing = db.query(Product).filter_by(slug=slug).first()
+            if existing:
+                existing.name = name
+                existing.price = Decimal(str(price))
+                existing.category_id = category.id if category else None
+                existing.is_visible = True
+                existing.description = description
+                existing.stock = max(existing.stock or 0, 20)
+                p = existing
+            else:
                 p = Product(
-                    name=item["name"],
-                    slug=item["slug"],
-                    description=item["description"],
-                    price=item["price"],
-                    stock=item["stock"],
-                    category_id=item["category_id"],
-                    is_featured=item["is_featured"],
-                    materials=item["materials"],
-                    handmade_details=item["handmade_details"],
-                    shipping_info=item["shipping_info"]
+                    name=name,
+                    slug=slug,
+                    description=description,
+                    price=Decimal(str(price)),
+                    stock=20,
+                    category_id=category.id if category else None,
+                    is_featured=False,
+                    is_visible=True,
                 )
                 db.add(p)
-                db.flush() # Populate ID
-                
-                # Image
-                for idx, img_url in enumerate(item["images"]):
-                    p_img = ProductImage(
-                        product_id=p.id,
-                        url=img_url,
-                        position=idx
-                    )
-                    db.add(p_img)
-                    
-                # Variants
-                for v_name in item["variants"]:
-                    p_var = ProductVariant(
-                        product_id=p.id,
-                        name=v_name,
-                        stock=4
-                    )
-                    db.add(p_var)
-                    
-            db.commit()
-            print("Seeded 4 products with images and variants.")
+                db.flush()
+
+            img_url = f"/products/{slug}.png"
+            for old_img in db.query(ProductImage).filter_by(product_id=p.id).all():
+                if old_img.url != img_url:
+                    db.delete(old_img)
+            existing_img = db.query(ProductImage).filter_by(product_id=p.id, url=img_url).first()
+            if not existing_img:
+                db.add(ProductImage(product_id=p.id, url=img_url, position=0))
+
+        db.commit()
+        print("Seeded/updated catalogue products.")
             
         # 4. Seed Coupons (if empty)
         if db.query(Coupon).count() == 0:

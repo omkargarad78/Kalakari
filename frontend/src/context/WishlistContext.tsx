@@ -8,7 +8,7 @@ interface WishlistContextType {
   wishlist: string[]; // List of product IDs
   wishlistProducts: any[];
   toggleWishlist: (product: any) => Promise<void>;
-  isWishlisted: (productId: str) => boolean;
+  isWishlisted: (productId: string) => boolean;
   loadWishlist: () => Promise<void>;
 }
 
@@ -71,7 +71,7 @@ export const WishlistProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     }
   };
 
-  const isWishlisted = (productId: str) => wishlist.includes(productId);
+  const isWishlisted = (productId: string) => wishlist.includes(productId);
 
   return (
     <WishlistContext.Provider value={{ wishlist, wishlistProducts, toggleWishlist, isWishlisted, loadWishlist }}>

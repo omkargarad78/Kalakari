@@ -35,7 +35,7 @@ export default function AboutPage() {
               <span className="font-serif italic font-normal text-brand-sage">Authentic Craftsmanship</span>
             </h2>
             <p className="text-xs text-brand-charcoal/70 leading-relaxed">
-              L&apos;Aura was born in 2024 as a way to share our mother&apos;s lifetime passion for crochet with the world. What started as warm winter blankets for family turned into a dedicated boutique for premium hand-knitted apparel and structured tote bags.
+              Kalakari was born in 2024 as a way to share our mother&apos;s lifetime passion for crochet with the world. What started as warm winter blankets for family turned into a dedicated boutique for premium hand-knitted apparel and structured tote bags.
             </p>
             <p className="text-xs text-brand-charcoal/70 leading-relaxed">
               In an era dominated by fast fashion and synthetic plastics, we choose natural milk cotton and premium wool blends. We don&apos;t run machines. Every loop is made by hand with precise tension nodes, ensuring your pieces last a lifetime.

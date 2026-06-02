@@ -6,11 +6,11 @@ from decimal import Decimal
 from app.db.session import get_db
 from app.schemas.all_schemas import (
     ProductResponse, ProductCreate, ProductUpdate,
-    CategoryResponse, CategoryCreate, ProductVariantResponse, ProductVariantCreate, ProductImageResponse
+    CategoryResponse, CategoryCreate, CategoryUpdate, ProductVariantResponse, ProductVariantCreate, ProductImageResponse
 )
 from app.crud.crud_operations import (
     get_products, get_product_by_slug, get_product_by_id, create_product, update_product, delete_product,
-    get_categories, get_category_by_slug, create_category
+    get_categories, get_category_by_slug, create_category, get_category_by_id, update_category, delete_category
 )
 from app.api.v1.deps import get_current_admin
 from app.models.all_models import ProductImage, ProductVariant, Category
@@ -30,7 +30,27 @@ def add_category(cat_in: CategoryCreate, db: Session = Depends(get_db), admin = 
         raise HTTPException(status_code=400, detail="Category slug already exists.")
     return create_category(db, cat_in.name, cat_in.slug, cat_in.description, cat_in.image_url)
 
+@router.put("/categories/{category_id}", response_model=CategoryResponse)
+def edit_category(category_id: str, cat_in: CategoryUpdate, db: Session = Depends(get_db), admin = Depends(get_current_admin)):
+    cat = get_category_by_id(db, category_id)
+    if not cat:
+        raise HTTPException(status_code=404, detail="Category not found")
+    # If slug is being changed, enforce uniqueness
+    if cat_in.slug and cat_in.slug != cat.slug:
+        existing = get_category_by_slug(db, cat_in.slug)
+        if existing:
+            raise HTTPException(status_code=400, detail="Category slug already exists.")
+    return update_category(db, cat, cat_in)
+
+@router.delete("/categories/{category_id}")
+def remove_category(category_id: str, db: Session = Depends(get_db), admin = Depends(get_current_admin)):
+    success = delete_category(db, category_id)
+    if not success:
+        raise HTTPException(status_code=404, detail="Category not found")
+    return {"status": "success", "message": "Category deleted successfully"}
+
 # ----------------- PRODUCTS -----------------
+@router.get("", response_model=List[ProductResponse])
 @router.get("/", response_model=List[ProductResponse])
 def read_products(
     search: Optional[str] = None,
@@ -43,8 +63,7 @@ def read_products(
     # Populate category names manually or via relationships
     res = []
     for p in prods:
-        # Create schema object manually to append category name
-        p_res = ProductResponse.from_orm(p)
+        p_res = ProductResponse.model_validate(p)
         if p.category:
             p_res.category_name = p.category.name
         res.append(p_res)
@@ -55,7 +74,7 @@ def read_product(slug: str, db: Session = Depends(get_db)):
     prod = get_product_by_slug(db, slug)
     if not prod:
         raise HTTPException(status_code=404, detail="Product not found")
-    p_res = ProductResponse.from_orm(prod)
+    p_res = ProductResponse.model_validate(prod)
     if prod.category:
         p_res.category_name = prod.category.name
     return p_res

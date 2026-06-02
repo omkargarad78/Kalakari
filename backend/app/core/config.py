@@ -4,7 +4,7 @@ from pydantic import AnyHttpUrl, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
-    PROJECT_NAME: str = "Premium Crochet Platform API"
+    PROJECT_NAME: str = "Kalakari API"
     API_V1_STR: str = "/api/v1"
     
     # Environment
@@ -28,6 +28,17 @@ class Settings(BaseSettings):
         elif isinstance(v, (list, str)):
             return v
         raise ValueError(v)
+
+    @field_validator("DATABASE_URL", mode="before")
+    @classmethod
+    def normalize_sqlite_path(cls, v: str) -> str:
+        # Keep SQLite path stable regardless of process working directory.
+        if isinstance(v, str) and v.startswith("sqlite:///./"):
+            backend_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+            rel = v.replace("sqlite:///./", "", 1)
+            abs_path = os.path.join(backend_root, rel)
+            return f"sqlite:///{abs_path.replace(os.sep, '/')}"
+        return v
         
     # Cloudinary (Fallback to local file storage if empty)
     CLOUDINARY_CLOUD_NAME: str = ""
@@ -36,14 +47,17 @@ class Settings(BaseSettings):
     
     # Resend Email (Fallback to console prints if empty)
     RESEND_API_KEY: str = ""
-    SENDER_EMAIL: str = "noreply@crochetboutique.com"
+    SENDER_EMAIL: str = "noreply@kalakari.in"
     
     # UPI Settings
-    UPI_ID: str = "familycrochet@upibank"
-    MERCH_NAME: str = "Crochet Craft Boutique"
+    UPI_ID: str = "omgdsc78@oksbi"
+    MERCH_NAME: str = "Kalakari"
     
     # Local Storage Uploads directory (when Cloudinary is empty)
     UPLOAD_DIR: str = "uploads"
+
+    # Path to the exported Next.js frontend build (set in production)
+    FRONTEND_BUILD_DIR: str = ""
     
     model_config = SettingsConfigDict(
         env_file=".env",

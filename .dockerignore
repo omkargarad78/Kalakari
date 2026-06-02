@@ -1,0 +1,19 @@
+# Python
+backend/venv/
+backend/__pycache__/
+backend/**/__pycache__/
+backend/*.pyc
+backend/.env
+backend/crochet.db
+backend/uploads/
+
+# Node
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+
+# Misc
+.git/
+.gitignore
+**/*.md
+**/.DS_Store

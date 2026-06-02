@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
-import { BarChart3, Package, HeartHandshake, ShieldCheck, Landmark, LogOut, Loader2, Home, Hammer } from "lucide-react";
+import { BarChart3, Package, ShieldCheck, Landmark, LogOut, Loader2, Home, Hammer, Tags } from "lucide-react";
 import Link from "next/link";
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -39,6 +39,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   const sidebarLinks = [
     { label: "Overview Stats", href: "/admin", icon: BarChart3 },
+    { label: "Category Manager", href: "/admin/categories", icon: Tags },
     { label: "Product Manager", href: "/admin/products", icon: Package },
     { label: "Order Manager", href: "/admin/orders", icon: Landmark },
     { label: "Custom Projects", href: "/admin/custom-requests", icon: Hammer }
@@ -51,7 +52,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         {/* Logo Banner */}
         <div className="p-6 border-b border-brand-cream text-center">
           <span className="text-[9px] uppercase font-bold tracking-widest text-brand-gold block">Artisan Workshop</span>
-          <h2 className="font-serif text-lg font-bold text-brand-charcoal tracking-[0.15em] mt-1">L&apos;AURA ADMIN</h2>
+          <h2 className="font-serif text-lg font-bold text-brand-charcoal tracking-[0.15em] mt-1">KALAKARI ADMIN</h2>
         </div>
 
         {/* Links */}
