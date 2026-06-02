@@ -1,4 +1,4 @@
-# L'Aura Crochet | Premium Luxury E-Commerce Platform
+# Kalakari | Premium Luxury E-Commerce Platform
 
 Welcome to the production-ready code repository for **L'Aura Crochet**, an Apple-inspired luxury handcrafted crochet boutique. This full-stack e-commerce system is designed to allow customers to browse, search, purchase via direct UPI QR verification, and request custom handmade crochet wear, while offering the artisan (owner) a real-time admin control dashboard to oversee products and audit transfers.
 
