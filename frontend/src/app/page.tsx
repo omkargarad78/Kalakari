@@ -8,7 +8,6 @@
 // import api from "@/lib/api";
 // import { useCart } from "@/context/CartContext";
 // import { useWishlist } from "@/context/WishlistContext";
-// import { motion } from "framer-motion";
 
 // export default function HomePage() {
 //   const { addToCart } = useCart();
