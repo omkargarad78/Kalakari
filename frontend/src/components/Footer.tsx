@@ -33,7 +33,7 @@ export default function Footer() {
         <div className="space-y-3">
           <h3 className="font-serif text-lg font-bold tracking-widest text-brand-charcoal">Kalakari</h3>
           <p className="text-xs text-brand-charcoal/65 leading-relaxed max-w-xs">
-            A family-run crochet studio creating handcrafted pieces with premium organic cotton and kid-mohair yarns — made with love, one stitch at a time.
+            A family-run crochet studio creating handcrafted pieces with premium organic cotton — made with love, one stitch at a time.
           </p>
         </div>
 

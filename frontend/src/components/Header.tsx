@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ShoppingBag, Heart, User, Menu, X, Search, Sparkles, LogOut } from "lucide-react";
+import { ShoppingBag, Heart, User, Menu, X, LogOut } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 import { useWishlist } from "@/context/WishlistContext";
 import { useAuth } from "@/context/AuthContext";
@@ -35,10 +35,9 @@ export default function Header() {
   const totalCartCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
   const navLinks = [
-    { label: "Boutique Shop", href: "/shop" },
+    { label: "Shop", href: "/shop" },
     { label: "Our Story", href: "/about" },
-    { label: "Bespoke Requests", href: "/custom-order" }
-    // { label: "Get In Touch", href: "/contact" }
+    { label: "Custom Orders", href: "/custom-order" },
   ];
 
   return (
@@ -211,10 +210,9 @@ export default function Header() {
 
             <div className="mt-auto border-t border-brand-cream pt-6 text-center space-y-2">
               <p className="text-xs text-brand-charcoal/50">Handcrafted with care by our family</p>
-              <div className="flex justify-center gap-1 text-[10px] uppercase font-bold tracking-widest text-brand-gold">
-                <Sparkles className="w-3.5 h-3.5" />
-                Pure Cotton & Mohair Yarn
-              </div>
+              <p className="text-[11px] tracking-wide text-brand-sage">
+                Premium organic cotton
+              </p>
             </div>
           </div>
         )}

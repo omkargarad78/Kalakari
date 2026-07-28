@@ -1,63 +1,114 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Figtree:wght@400;500;600;700&display=swap');
 @import "tailwindcss";
 
 @theme {
-  --color-brand-white: #FAF9F7;
-  --color-brand-cream: #F5EFE7;
-  --color-brand-sage: #A8B5A2;
-  --color-brand-gold: #D4B483;
-  --color-brand-charcoal: #2D2D2D;
-  --color-brand-success: #6E8E75;
-  --color-brand-error: #C97A7A;
-  
-  --font-serif: "Playfair Display", Georgia, serif;
-  --font-sans: "Inter", system-ui, sans-serif;
+  --color-brand-white: #F7F4EF;
+  --color-brand-cream: #EDE6DC;
+  --color-brand-sage: #5F7A63;
+  --color-brand-gold: #B08968;
+  --color-brand-charcoal: #2C241E;
+  --color-brand-success: #5F7A63;
+  --color-brand-error: #A85A5A;
+  --color-brand-madder: #8B3E3E;
+  --color-brand-ink: #1E1A16;
+
+  --font-serif: "Cormorant Garamond", Georgia, serif;
+  --font-sans: "Figtree", ui-sans-serif, sans-serif;
 }
 
 :root {
-  --background: #FAF9F7;
-  --foreground: #2D2D2D;
+  --background: #F7F4EF;
+  --foreground: #2C241E;
 }
 
 body {
   background-color: var(--background);
   color: var(--foreground);
-  font-family: "Inter", system-ui, -apple-system, sans-serif;
+  font-family: "Figtree", ui-sans-serif, sans-serif;
   overflow-x: hidden;
 }
 
 h1, h2, h3, h4, h5, h6, .font-serif {
-  font-family: "Playfair Display", Georgia, serif;
+  font-family: "Cormorant Garamond", Georgia, serif;
 }
 
-/* Elegant custom scrollbars */
+/* Soft yarn-loft atmosphere */
+.yarn-grain {
+  background-image:
+    radial-gradient(ellipse 80% 50% at 10% 0%, rgba(95, 122, 99, 0.08), transparent 55%),
+    radial-gradient(ellipse 60% 40% at 90% 20%, rgba(176, 137, 104, 0.1), transparent 50%),
+    linear-gradient(180deg, #F7F4EF 0%, #F3EEE6 100%);
+}
+
+.stitch-fade {
+  background-image: repeating-linear-gradient(
+    -12deg,
+    transparent,
+    transparent 11px,
+    rgba(44, 36, 30, 0.025) 11px,
+    rgba(44, 36, 30, 0.025) 12px
+  );
+}
+
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
 ::-webkit-scrollbar-track {
-  background: #FAF9F7;
+  background: #F7F4EF;
 }
 ::-webkit-scrollbar-thumb {
-  background: #E5DEC9;
+  background: #D9CFC0;
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #A8B5A2;
+  background: #5F7A63;
 }
 
-/* Custom premium hover lift effect */
 .hover-lift {
-  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.45s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .hover-lift:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 24px -10px rgba(0, 0, 0, 0.08);
+  transform: translateY(-3px);
+  box-shadow: 0 10px 28px -14px rgba(44, 36, 30, 0.18);
 }
 
-/* Glassmorphism utility */
-.glass-panel {
-  background: rgba(250, 249, 247, 0.7);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(212, 180, 131, 0.15);
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes soft-zoom {
+  from {
+    transform: scale(1.06);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+.animate-rise {
+  animation: rise-in 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.animate-rise-delay-1 {
+  animation: rise-in 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.12s both;
+}
+
+.animate-rise-delay-2 {
+  animation: rise-in 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.24s both;
+}
+
+.animate-rise-delay-3 {
+  animation: rise-in 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.36s both;
+}
+
+.animate-hero-image {
+  animation: soft-zoom 8s cubic-bezier(0.16, 1, 0.3, 1) both;
 }

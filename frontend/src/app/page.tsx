@@ -2,12 +2,66 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { ArrowRight, Sparkles, Heart, ShoppingCart, Eye, Star, HeartHandshake } from "lucide-react";
+import { ArrowRight, Heart, ShoppingBag } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import api from "@/lib/api";
 import { useCart } from "@/context/CartContext";
 import { useWishlist } from "@/context/WishlistContext";
+
+const categories = [
+  {
+    name: "Hair Accessories",
+    slug: "hair-accessories",
+    image: "/products/frilled-crochet-scrunchie.png",
+    note: "Scrunchies & clips",
+  },
+  {
+    name: "Hair Bun & Style",
+    slug: "hair-bun-style-accessories",
+    image: "/products/rose-hair-bun-red.png",
+    note: "Bun covers & gajra",
+  },
+  {
+    name: "Flower Appliqués",
+    slug: "flower-appliques-brooches",
+    image: "/products/rose-brooch-red.png",
+    note: "Pins & brooches",
+  },
+  {
+    name: "Home Decor",
+    slug: "home-decor",
+    image: "/products/sunflower-pot-decor.png",
+    note: "Soft accents for home",
+  },
+  {
+    name: "Garlands & Hangings",
+    slug: "garlands-hangings",
+    image: "/products/crochet-toran-maroon-gold.png",
+    note: "Torans & malas",
+  },
+  {
+    name: "Coasters & Trinkets",
+    slug: "coasters-trinkets",
+    image: "/products/mini-flower-coasters-set-3.png",
+    note: "Everyday little joys",
+  },
+];
+
+const craftPillars = [
+  {
+    title: "Premium organic cotton",
+    text: "Soft, breathable yarn chosen for skin comfort and lasting stitch definition.",
+  },
+  {
+    title: "One stitch at a time",
+    text: "Every piece is crocheted by hand in our family workshop — never mass-produced.",
+  },
+  {
+    title: "Made to be kept",
+    text: "From festive torans to everyday scrunchies, pieces meant for real life and lasting memory.",
+  },
+];
 
 export default function HomePage() {
   const { addToCart } = useCart();
@@ -19,28 +73,9 @@ export default function HomePage() {
     const fetchFeatured = async () => {
       try {
         const response = await api.get("/products?is_featured=true");
-        setFeaturedProducts(response.data);
-      } catch (error) {
-        console.error("Failed to load featured products:", error);
-        // Fallback mockup products
-        setFeaturedProducts([
-          {
-            id: "1",
-            name: "Sage Green Crochet Tote Bag",
-            slug: "sage-green-crochet-tote",
-            price: 2499.0,
-            images: [{ url: "https://images.unsplash.com/photo-1590874103328-eac38a683ce7?auto=format&fit=crop&q=80&w=600" }],
-            category_name: "Luxury Bags"
-          },
-          {
-            id: "2",
-            name: "Oversized Sunset Mohair Cardigan",
-            slug: "oversized-sunset-mohair-cardigan",
-            price: 5999.0,
-            images: [{ url: "https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?auto=format&fit=crop&q=80&w=600" }],
-            category_name: "Apparel & Cardigans"
-          }
-        ]);
+        setFeaturedProducts(response.data.slice(0, 4));
+      } catch {
+        setFeaturedProducts([]);
       } finally {
         setLoading(false);
       }
@@ -48,166 +83,187 @@ export default function HomePage() {
     fetchFeatured();
   }, []);
 
-  const categories = [
-    { name: "Hair Accessories", slug: "hair-accessories", image: "/catalogue-source.png" },
-    { name: "Hair Bun & Style Accessories", slug: "hair-bun-style-accessories", image: "/catalogue-source.png" },
-    { name: "Flower Appliqués & Brooches", slug: "flower-appliques-brooches", image: "/catalogue-source.png" },
-    { name: "Home Decor", slug: "home-decor", image: "/catalogue-source.png" },
-    { name: "Garlands & Hangings", slug: "garlands-hangings", image: "/catalogue-source.png" },
-    { name: "Coasters & Trinkets", slug: "coasters-trinkets", image: "/catalogue-source.png" }
-  ];
-
   return (
-    <div className="flex flex-col min-h-screen bg-brand-white">
+    <div className="flex flex-col min-h-screen yarn-grain">
       <Header />
 
-      {/* Hero Section */}
-      <section className="relative min-h-[90vh] flex items-center pt-20 overflow-hidden">
-        {/* Generated lifestyle image background */}
-        <div className="absolute inset-0 bg-cover bg-center bg-no-repeat" style={{ backgroundImage: "url('/hero.png')" }}>
-          <div className="absolute inset-0 bg-black/10" />
+      {/* Hero — one composition: brand, line, sentence, CTAs, full-bleed craft image */}
+      <section className="relative min-h-[100svh] flex items-end md:items-center overflow-hidden">
+        <div className="absolute inset-0">
+          <img
+            src="/hero.png"
+            alt="Handcrafted Kalakari crochet piece in soft natural light"
+            className="h-full w-full object-cover animate-hero-image"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-brand-ink/75 via-brand-ink/45 to-brand-ink/15" />
+          <div className="absolute inset-0 bg-gradient-to-t from-brand-ink/50 via-transparent to-brand-ink/20" />
         </div>
 
-        <div className="relative max-w-7xl mx-auto px-6 md:px-8 w-full z-10">
-          <div className="max-w-2xl bg-brand-white/85 backdrop-blur-md p-8 md:p-12 rounded-2xl border border-brand-gold/15 shadow-xl space-y-6">
-            <div className="flex items-center gap-1.5 text-xs uppercase tracking-widest font-bold text-brand-sage">
-              <Sparkles className="w-4 h-4 text-brand-gold fill-brand-gold" />
-              100% Handcrafted Slowly
-            </div>
-            
-            <h1 className="font-serif text-4xl md:text-6xl font-bold tracking-tight text-brand-charcoal leading-[1.1]">
-              Heirloom Crafts <br />
-              <span className="font-serif italic font-normal text-brand-gold">Woven With Love</span>
-            </h1>
-            
-            <p className="text-sm text-brand-charcoal/80 leading-relaxed max-w-md">
-              Discover a combination of Apple-inspired clean aesthetics and traditional family craftsmanship. Every piece is hand-stitched with organic premium fibers.
+        <div className="relative z-10 w-full max-w-7xl mx-auto px-6 md:px-8 pt-28 pb-16 md:py-28">
+          <div className="max-w-xl text-brand-white space-y-6 md:space-y-8">
+            <p className="animate-rise font-serif text-5xl sm:text-6xl md:text-7xl lg:text-8xl tracking-[0.04em] leading-none">
+              Kalakari
             </p>
 
-            <div className="flex flex-wrap gap-4 pt-2">
+            <h1 className="animate-rise-delay-1 font-serif text-2xl sm:text-3xl md:text-4xl font-medium leading-snug text-brand-white/95">
+              Handcrafted crochet, made slowly by our family
+            </h1>
+
+            <p className="animate-rise-delay-2 text-sm md:text-base text-brand-white/80 leading-relaxed max-w-md">
+              A family-run studio creating pieces with premium organic cotton — one careful stitch at a time.
+            </p>
+
+            <div className="animate-rise-delay-3 flex flex-wrap gap-3 pt-1">
               <Link
                 href="/shop"
-                className="bg-brand-sage hover:bg-brand-sage/95 text-brand-white px-8 py-3 rounded-full text-xs uppercase tracking-wider font-semibold hover-lift flex items-center gap-2"
+                className="inline-flex items-center gap-2 bg-brand-sage text-brand-white px-7 py-3.5 text-sm font-medium tracking-wide hover:bg-brand-sage/90 transition-colors"
               >
-                Shop Collection
+                Shop the collection
                 <ArrowRight className="w-4 h-4" />
               </Link>
               <Link
                 href="/custom-order"
-                className="bg-brand-cream border border-brand-gold/30 hover:border-brand-sage text-brand-charcoal px-8 py-3 rounded-full text-xs uppercase tracking-wider font-semibold hover-lift"
+                className="inline-flex items-center gap-2 border border-brand-white/45 text-brand-white px-7 py-3.5 text-sm font-medium tracking-wide hover:bg-brand-white/10 transition-colors"
               >
-                Bespoke Design
+                Request a custom piece
               </Link>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Categories Grid */}
-      <section className="py-20 max-w-7xl mx-auto px-6 md:px-8 w-full space-y-12">
-        <div className="text-center max-w-lg mx-auto space-y-3">
-          <h2 className="font-serif text-3xl font-bold text-brand-charcoal">Explore Our Catalogs</h2>
-          <p className="text-xs uppercase tracking-widest text-brand-gold font-bold">Curated luxury handmade categories</p>
-        </div>
+      {/* Collections */}
+      <section className="relative py-20 md:py-28 stitch-fade">
+        <div className="max-w-7xl mx-auto px-6 md:px-8 space-y-12">
+          <div className="max-w-2xl space-y-3">
+            <h2 className="font-serif text-3xl md:text-5xl text-brand-charcoal tracking-tight">
+              What we crochet
+            </h2>
+            <p className="text-brand-charcoal/70 text-sm md:text-base leading-relaxed">
+              From festive hangings to everyday hair pieces — each category is shaped by the same patient handwork.
+            </p>
+          </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-          {categories.map((cat, idx) => (
-            <Link
-              key={cat.slug}
-              href={`/shop?category=${cat.slug}`}
-              className="group relative h-72 rounded-2xl overflow-hidden hover-lift block border border-brand-cream"
-            >
-              <img
-                src={cat.image}
-                alt={cat.name}
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-brand-charcoal/80 via-brand-charcoal/20 to-transparent" />
-              <div className="absolute bottom-6 left-6 right-6">
-                <span className="text-[10px] text-brand-gold uppercase tracking-widest font-bold block mb-1">Catalog 0{idx+1}</span>
-                <h3 className="font-serif text-lg font-bold text-brand-white">{cat.name}</h3>
-              </div>
-            </Link>
-          ))}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-10">
+            {categories.map((cat) => (
+              <Link
+                key={cat.slug}
+                href={`/shop?category=${cat.slug}`}
+                className="group block space-y-4"
+              >
+                <div className="relative aspect-[4/5] overflow-hidden bg-brand-cream">
+                  <img
+                    src={cat.image}
+                    alt={cat.name}
+                    className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <div className="flex items-baseline justify-between gap-3">
+                    <h3 className="font-serif text-2xl text-brand-charcoal group-hover:text-brand-sage transition-colors">
+                      {cat.name}
+                    </h3>
+                    <ArrowRight className="w-4 h-4 shrink-0 text-brand-sage opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition-all" />
+                  </div>
+                  <p className="text-xs tracking-wide text-brand-charcoal/55">{cat.note}</p>
+                </div>
+              </Link>
+            ))}
+          </div>
         </div>
       </section>
 
-      {/* Featured Section */}
-      <section className="py-20 bg-brand-cream/20 border-y border-brand-cream/60">
-        <div className="max-w-7xl mx-auto px-6 md:px-8 w-full space-y-12">
-          <div className="flex flex-col md:flex-row md:justify-between md:items-end gap-4">
-            <div className="space-y-2">
-              <h2 className="font-serif text-3xl font-bold text-brand-charcoal">Artisan Favorites</h2>
-              <p className="text-xs uppercase tracking-widest text-brand-sage font-bold">Best sellers & limited seasonal drops</p>
+      {/* Featured */}
+      <section className="py-20 md:py-28 bg-brand-cream/50">
+        <div className="max-w-7xl mx-auto px-6 md:px-8 space-y-12">
+          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
+            <div className="space-y-3 max-w-xl">
+              <h2 className="font-serif text-3xl md:text-5xl text-brand-charcoal tracking-tight">
+                Pieces from the studio
+              </h2>
+              <p className="text-brand-charcoal/70 text-sm md:text-base leading-relaxed">
+                A few favorites ready to ship — soft organic cotton, finished with care.
+              </p>
             </div>
-            <Link href="/shop" className="text-xs uppercase tracking-widest font-bold text-brand-sage hover:text-brand-sage/80 flex items-center gap-1.5 transition-colors self-start">
-              Explore Complete Catalog
+            <Link
+              href="/shop"
+              className="inline-flex items-center gap-2 text-sm font-medium text-brand-sage hover:text-brand-charcoal transition-colors self-start"
+            >
+              View all pieces
               <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
 
           {loading ? (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {[1, 2, 3].map((n) => (
-                <div key={n} className="h-96 bg-brand-cream/40 rounded-2xl animate-pulse" />
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+              {[1, 2, 3, 4].map((n) => (
+                <div key={n} className="aspect-[3/4] bg-brand-cream animate-pulse" />
               ))}
+            </div>
+          ) : featuredProducts.length === 0 ? (
+            <div className="py-16 text-center space-y-4">
+              <p className="text-brand-charcoal/60 text-sm">
+                New pieces are being finished in the workshop.
+              </p>
+              <Link
+                href="/shop"
+                className="inline-flex items-center gap-2 text-sm font-medium text-brand-sage hover:text-brand-charcoal transition-colors"
+              >
+                Browse the shop
+                <ArrowRight className="w-4 h-4" />
+              </Link>
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
               {featuredProducts.map((prod) => {
-                const image = prod.images?.[0]?.url || "https://images.unsplash.com/photo-1590874103328-eac38a683ce7?auto=format&fit=crop&q=80&w=600";
+                const image =
+                  prod.images?.[0]?.url || "/products/mini-flower-coasters-set-3.png";
                 const isSaved = isWishlisted(prod.id);
 
                 return (
-                  <div key={prod.id} className="group relative bg-brand-white rounded-2xl p-4 border border-brand-cream hover-lift">
-                    {/* Image */}
-                    <div className="relative aspect-square rounded-xl overflow-hidden bg-brand-cream mb-4">
-                      <img
-                        src={image}
-                        alt={prod.name}
-                        className="w-full h-full object-cover group-hover:scale-102 transition-transform duration-500"
-                      />
-                      {/* Wishlist Button */}
+                  <article key={prod.id} className="group space-y-4">
+                    <div className="relative aspect-[3/4] overflow-hidden bg-brand-white">
+                      <Link href={`/shop/${prod.slug}`} className="block h-full">
+                        <img
+                          src={image}
+                          alt={prod.name}
+                          className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.03]"
+                        />
+                      </Link>
                       <button
+                        type="button"
                         onClick={() => toggleWishlist(prod)}
-                        className="absolute top-3 right-3 p-2 bg-brand-white/80 hover:bg-brand-white rounded-full text-brand-charcoal hover:text-brand-error transition-all shadow-sm z-10"
+                        aria-label={isSaved ? "Remove from wishlist" : "Add to wishlist"}
+                        className="absolute top-3 right-3 p-2.5 bg-brand-white/90 text-brand-charcoal hover:text-brand-error transition-colors"
                       >
                         <Heart className={`w-4 h-4 ${isSaved ? "fill-brand-error text-brand-error" : ""}`} />
                       </button>
                     </div>
 
-                    {/* Metadata */}
-                    <div className="space-y-1">
-                      <span className="text-[10px] uppercase font-semibold text-brand-gold tracking-wider">
-                        {prod.category_name || "Premium Design"}
-                      </span>
-                      <h3 className="font-medium text-sm text-brand-charcoal line-clamp-1">
-                        {prod.name}
-                      </h3>
-                      <div className="flex justify-between items-center pt-2">
-                        <span className="font-semibold text-sm text-brand-charcoal">
-                          INR {prod.price}
+                    <div className="space-y-2">
+                      <p className="text-[11px] uppercase tracking-[0.14em] text-brand-gold font-medium">
+                        {prod.category_name || "Handcrafted"}
+                      </p>
+                      <Link href={`/shop/${prod.slug}`}>
+                        <h3 className="font-serif text-xl text-brand-charcoal leading-snug hover:text-brand-sage transition-colors">
+                          {prod.name}
+                        </h3>
+                      </Link>
+                      <div className="flex items-center justify-between gap-3 pt-1">
+                        <span className="text-sm font-medium text-brand-charcoal">
+                          ₹{Number(prod.price).toLocaleString("en-IN")}
                         </span>
-                        
-                        <div className="flex gap-2">
-                          <Link
-                            href={`/shop/${prod.slug}`}
-                            className="p-1.5 bg-brand-cream hover:bg-brand-sage/10 text-brand-sage rounded-full transition-colors"
-                            title="Quick View"
-                          >
-                            <Eye className="w-3.5 h-3.5" />
-                          </Link>
-                          <button
-                            onClick={() => addToCart(prod, null, 1)}
-                            className="p-1.5 bg-brand-sage hover:bg-brand-sage/90 text-brand-white rounded-full transition-colors"
-                            title="Add to Basket"
-                          >
-                            <ShoppingCart className="w-3.5 h-3.5" />
-                          </button>
-                        </div>
+                        <button
+                          type="button"
+                          onClick={() => addToCart(prod, null, 1)}
+                          className="inline-flex items-center gap-1.5 text-xs font-medium tracking-wide text-brand-sage hover:text-brand-charcoal transition-colors"
+                        >
+                          <ShoppingBag className="w-3.5 h-3.5" />
+                          Add
+                        </button>
                       </div>
                     </div>
-                  </div>
+                  </article>
                 );
               })}
             </div>
@@ -215,67 +271,87 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Storytelling Banner */}
-      <section className="py-20 max-w-7xl mx-auto px-6 md:px-8 w-full">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center bg-brand-cream/30 p-8 md:p-16 rounded-3xl border border-brand-gold/15">
-          <div className="space-y-6">
-            <div className="inline-flex items-center gap-1.5 text-xs uppercase tracking-widest font-bold text-brand-gold bg-brand-white px-3 py-1 rounded-full border border-brand-gold/20">
-              <HeartHandshake className="w-3.5 h-3.5 text-brand-gold" />
-              The Artisan Story
+      {/* Family story */}
+      <section className="py-20 md:py-28">
+        <div className="max-w-7xl mx-auto px-6 md:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-center">
+            <div className="lg:col-span-6 relative">
+              <div className="aspect-[4/5] overflow-hidden bg-brand-cream">
+                <img
+                  src="/products/crochet-gajra-white-maroon.png"
+                  alt="Hand-crocheted gajra made with organic cotton"
+                  className="h-full w-full object-cover"
+                />
+              </div>
+              <div className="hidden md:block absolute -bottom-6 -right-4 lg:-right-8 w-40 lg:w-48 aspect-square overflow-hidden border-[6px] border-brand-white shadow-[0_12px_40px_-20px_rgba(44,36,30,0.35)]">
+                <img
+                  src="/products/crochet-toran-maroon-gold.png"
+                  alt="Maroon and gold crochet toran detail"
+                  className="h-full w-full object-cover"
+                />
+              </div>
             </div>
-            <h2 className="font-serif text-3xl md:text-5xl font-bold tracking-tight text-brand-charcoal leading-[1.2]">
-              Made By Our Mother, <br />
-              <span className="font-serif italic font-normal text-brand-sage">Designed for Luxury</span>
-            </h2>
-            <p className="text-sm text-brand-charcoal/70 leading-relaxed">
-              Every single product available on Kalakari is handcrafted by our mother and family in our home workshop. We reject mass production in favor of quality, durability, and absolute beauty. By purchasing, you support authentic artisan skills.
-            </p>
-            <div className="flex gap-4 pt-2">
-              <Link href="/about" className="text-xs uppercase tracking-widest font-bold text-brand-sage hover:text-brand-sage/80 flex items-center gap-1.5 transition-colors">
-                Read Our Full Philosophy
+
+            <div className="lg:col-span-6 space-y-6 lg:pl-4">
+              <h2 className="font-serif text-3xl md:text-5xl text-brand-charcoal tracking-tight leading-[1.15]">
+                Crafted at home,{" "}
+                <span className="italic text-brand-sage">passed through our hands</span>
+              </h2>
+              <p className="text-brand-charcoal/70 text-sm md:text-base leading-relaxed max-w-lg">
+                Kalakari began in our family workshop — our mother’s crochet hook, quiet evenings, and pieces made for festivals, gifts, and everyday beauty. We still work that way: small batches, organic cotton, and care you can feel in every stitch.
+              </p>
+              <Link
+                href="/about"
+                className="inline-flex items-center gap-2 text-sm font-medium text-brand-sage hover:text-brand-charcoal transition-colors"
+              >
+                Read our story
                 <ArrowRight className="w-4 h-4" />
               </Link>
             </div>
           </div>
-          <div className="relative h-96 rounded-2xl overflow-hidden shadow-lg border border-brand-cream">
-            <img
-              src="https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?auto=format&fit=crop&q=80&w=800"
-              alt="Artisan workspace detailing"
-              className="w-full h-full object-cover"
-            />
+        </div>
+      </section>
+
+      {/* Materials / meaning */}
+      <section className="py-20 md:py-24 bg-brand-charcoal text-brand-white">
+        <div className="max-w-7xl mx-auto px-6 md:px-8 space-y-12">
+          <div className="max-w-2xl space-y-3">
+            <h2 className="font-serif text-3xl md:text-4xl tracking-tight">
+              Why it feels different
+            </h2>
+            <p className="text-brand-white/65 text-sm md:text-base leading-relaxed">
+              Not a factory line — a family studio devoted to soft yarn and honest making.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-12">
+            {craftPillars.map((pillar, index) => (
+              <div key={pillar.title} className="space-y-3 border-t border-brand-white/15 pt-6">
+                <p className="font-serif text-brand-gold text-lg">{String(index + 1).padStart(2, "0")}</p>
+                <h3 className="font-serif text-2xl">{pillar.title}</h3>
+                <p className="text-sm text-brand-white/65 leading-relaxed">{pillar.text}</p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* Customer Testimonials */}
-      <section className="py-20 bg-brand-cream/10 border-t border-brand-cream/40">
-        <div className="max-w-7xl mx-auto px-6 md:px-8 w-full space-y-12">
-          <div className="text-center space-y-2">
-            <h2 className="font-serif text-3xl font-bold text-brand-charcoal">Atelier Feedback</h2>
-            <p className="text-xs uppercase tracking-widest text-brand-gold font-bold">Trusted by collectors worldwide</p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {[
-              { name: "Eleanor Vance", quote: "The Sage Green Tote is absolutely stunning. The stitches are perfectly uniform, and the material feels heavy and premium. Truly boutique quality." },
-              { name: "Robert Downey", quote: "Bought the Mohair cardigan for my wife. She was completely blown away by the sunset transitions and the soft Silk texture. Best gift ever!" },
-              { name: "Aria Montgomery", quote: "I submitted a custom request with a sketch. Kalakari's mother created it exactly as I wanted it. The quotation and shipping details were seamless." }
-            ].map((rev, idx) => (
-              <div key={idx} className="bg-brand-white p-8 rounded-2xl border border-brand-cream shadow-sm space-y-4">
-                <div className="flex text-brand-gold">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="w-4 h-4 fill-current" />
-                  ))}
-                </div>
-                <p className="text-xs text-brand-charcoal/80 italic leading-relaxed">
-                  &ldquo;{rev.quote}&rdquo;
-                </p>
-                <div className="font-serif text-xs font-semibold uppercase tracking-wider text-brand-charcoal/60">
-                  — {rev.name}
-                </div>
-              </div>
-            ))}
-          </div>
+      {/* Custom order invitation */}
+      <section className="py-20 md:py-28 stitch-fade">
+        <div className="max-w-3xl mx-auto px-6 md:px-8 text-center space-y-6">
+          <h2 className="font-serif text-3xl md:text-5xl text-brand-charcoal tracking-tight">
+            Have a colour, occasion, or sketch in mind?
+          </h2>
+          <p className="text-brand-charcoal/70 text-sm md:text-base leading-relaxed max-w-xl mx-auto">
+            Share your idea and we’ll crochet a piece just for you — the same organic cotton, the same family hands.
+          </p>
+          <Link
+            href="/custom-order"
+            className="inline-flex items-center gap-2 bg-brand-sage text-brand-white px-8 py-3.5 text-sm font-medium tracking-wide hover:bg-brand-sage/90 transition-colors"
+          >
+            Start a custom request
+            <ArrowRight className="w-4 h-4" />
+          </Link>
         </div>
       </section>
 
